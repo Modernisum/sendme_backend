@@ -51,6 +51,7 @@ io.on('connection', (socket) => {
     io.emit('user-status', { userId, status: 'online' });
     console.log('Active users:', activeUsers.size);
   });
+  
 
   // Send real-time message
   socket.on('send-message', (data) => {
@@ -194,6 +195,21 @@ io.on('connection', (socket) => {
   // Error handling
   socket.on('error', (error) => {
     console.error('Socket error:', error);
+  });
+});
+const groupSocket = require('./socket/groupSocket');
+
+io.on('connection', (socket) => {
+  console.log('New client connected:', socket.id);
+
+  // Existing socket handlers
+  require('./socket/socketHandler')(io, socket);
+  
+  // Group socket handlers
+  groupSocket(io, socket);
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
   });
 });
 
